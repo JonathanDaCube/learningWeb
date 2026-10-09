@@ -10,12 +10,13 @@
   <main class="container">
     <header class="top">
       <h1>每日中文閱讀測驗</h1>
-      <div class="lang-switch" title="切換繁體/简体">
-        <label class="switch">
-          <input type="checkbox" id="lang-toggle" checked>
-          <span class="slider"></span>
-        </label>
-        <div class="labels"><span class="trad">繁體</span><span class="simp">简体</span></div>
+
+      <div class="lang-select">
+        <label for="lang-select">語言</label>
+        <select id="lang-select" aria-label="選擇語言">
+          <option value="traditional" selected>繁體</option>
+          <option value="simplified">简体</option>
+        </select>
       </div>
     </header>
 
