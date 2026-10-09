@@ -1,5 +1,5 @@
 // firebase-config.js
-// exports auth, db and common helpers
+// exports auth, realtime database and common helpers
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
 import {
@@ -10,15 +10,14 @@ import {
   onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js';
 import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  collection,
-  query,
-  orderBy
-} from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
+  getDatabase,
+  ref,
+  set,
+  get,
+  child,
+  push,
+  update
+} from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAGyk7X-koKRvLTk6bwPY79MzhUbgOICiA",
@@ -33,7 +32,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-const db = getFirestore(app);
+const rtdb = getDatabase(app);
 
 async function signInWithGooglePopup() {
   return signInWithPopup(auth, provider);
@@ -49,12 +48,11 @@ export {
   signInWithGooglePopup,
   signOut,
   onAuthStateChanged,
-  db,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  collection,
-  query,
-  orderBy
+  rtdb,
+  ref,
+  set,
+  get,
+  child,
+  push,
+  update
 };

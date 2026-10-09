@@ -1,18 +1,16 @@
 /* script.js - main page logic (module)
-   - updated to redirect to signin/index.html when unauthenticated
+   - switched from Firestore to Realtime Database for profiles and scores
 */
 
 import {
   auth,
   onAuthStateChanged,
   signOut as firebaseSignOut,
-  db,
-  doc,
-  setDoc,
-  getDocs,
-  collection,
-  query,
-  orderBy
+  rtdb,
+  ref,
+  set,
+  get,
+  child
 } from './firebase-config.js';
 
 const QUIZ_KEY = 'chinese-daily-quiz-scores';
@@ -169,11 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
   async function saveScoreCloud(date, scoreObj) {
     if (!currentUser) return;
     try {
-      const userDocRef = doc(db, 'users', currentUser.uid, 'scores', date);
-      await setDoc(userDocRef, scoreObj);
+      const scoreRef = ref(rtdb, `users/${currentUser.uid}/scores/${date}`);
+      await set(scoreRef, scoreObj);
       return true;
     } catch (err) {
-      console.error('Failed to save score to Firestore', err);
+      console.error('Failed to save score to Realtime DB', err);
       return false;
     }
   }
@@ -183,17 +181,18 @@ document.addEventListener('DOMContentLoaded', () => {
     historyTableBody.innerHTML = '';
     if (!currentUser) return;
     try {
-      const scoresCol = collection(db, 'users', currentUser.uid, 'scores');
-      const q = query(scoresCol, orderBy('__name__', 'desc'));
-      const snap = await getDocs(q);
-      if (!snap.empty) {
-        snap.forEach(docSnap => {
-          const d = docSnap.id;
-          const data = docSnap.data();
+      const scoresRef = ref(rtdb, `users/${currentUser.uid}/scores`);
+      const snap = await get(scoresRef);
+      if (snap.exists()) {
+        const data = snap.val();
+        // data is an object keyed by date — sort keys descending
+        const dates = Object.keys(data).sort((a,b)=>b.localeCompare(a));
+        dates.forEach(d=>{
+          const entry = data[d];
           const tr = document.createElement('tr');
           const tdDate = document.createElement('td'); tdDate.textContent = d;
-          const tdScore = document.createElement('td'); tdScore.textContent = `${data.percentage}%`;
-          const tdDetail = document.createElement('td'); tdDetail.textContent = `${data.correct}/${data.total}`;
+          const tdScore = document.createElement('td'); tdScore.textContent = `${entry.percentage}%`;
+          const tdDetail = document.createElement('td'); tdDetail.textContent = `${entry.correct}/${entry.total}`;
           tr.appendChild(tdDate); tr.appendChild(tdScore); tr.appendChild(tdDetail);
           historyTableBody.appendChild(tr);
         });
@@ -219,29 +218,31 @@ document.addEventListener('DOMContentLoaded', () => {
   function disableForm() { const inputs = form.querySelectorAll('input'); inputs.forEach(i => i.disabled = true); submitBtn.disabled = true; }
   function enableForm() { const inputs = form.querySelectorAll('input'); inputs.forEach(i => i.disabled = false); submitBtn.disabled = false; }
 
-  function showResultFor(date) {
-    // show local/cloud saved result if exists
-    // try cloud first
+  async function showResultFor(date) {
     if (!currentUser) return;
-    (async ()=>{
-      try {
-        const docRef = doc(db, 'users', currentUser.uid, 'scores', date);
-        const docSnap = await getDocs(collection(db, 'users', currentUser.uid, 'scores'));
-        const localAll = getStoredScoresLocal();
-        if (localAll[date]) {
-          const r = localAll[date];
-          resultEl.innerHTML = `<strong>你已在 ${date} 完成測驗。</strong> 得分： ${r.percentage}% （${r.correct}/${r.total}）`;
-          disableForm();
-          return;
-        }
-      } catch (err) {
-        // ignore, fallback
+    try {
+      const cloudRef = ref(rtdb, `users/${currentUser.uid}/scores/${date}`);
+      const snap = await get(cloudRef);
+      if (snap.exists()) {
+        const r = snap.val();
+        resultEl.innerHTML = `<strong>你已在 ${date} 完成測驗。</strong> 得分： ${r.percentage}% （${r.correct}/${r.total}）`;
+        disableForm();
+        return;
       }
+    } catch (err) {
+      // ignore and fallback to local
+    }
 
-      // if not found locally, don't disable form (we could check cloud more precisely but keep lightweight)
-      resultEl.innerHTML = '';
-      enableForm();
-    })();
+    const localAll = getStoredScoresLocal();
+    if (localAll[date]) {
+      const r = localAll[date];
+      resultEl.innerHTML = `<strong>你已在 ${date} 完成測驗。</strong> 得分： ${r.percentage}% （${r.correct}/${r.total}）`;
+      disableForm();
+      return;
+    }
+
+    resultEl.innerHTML = '';
+    enableForm();
   }
 
   submitBtn.addEventListener('click', async (e) => {
@@ -255,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const answers = [];
     let unanswered = 0;
     qObj.questions.forEach((qItem, idx)=>{
-      const val = form.querySelector(`input[name=\"q${idx}\"]:checked`);
+      const val = form.querySelector(`input[name="q${idx}"]:checked`);
       if (val) answers.push(Number(val.value)); else { answers.push(null); unanswered++; }
     });
 

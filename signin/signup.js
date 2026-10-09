@@ -1,5 +1,5 @@
-// signin/signup.js — collects extra profile info for new users and saves to Firestore
-import { auth, db, doc, setDoc, onAuthStateChanged } from '../firebase-config.js';
+// signin/signup.js — collects extra profile info for new users and saves to Realtime Database
+import { auth, rtdb, ref, set, onAuthStateChanged } from '../firebase-config.js';
 
 const form = document.getElementById('signup-form');
 const cancelBtn = document.getElementById('cancel-btn');
@@ -39,8 +39,8 @@ onAuthStateChanged(auth, async (user) => {
     };
 
     try {
-      const profileRef = doc(db, 'profiles', user.uid);
-      await setDoc(profileRef, profile);
+      const profileRef = ref(rtdb, `profiles/${user.uid}`);
+      await set(profileRef, profile);
       // redirect to main
       window.location.href = '../index.html';
     } catch (err) {
