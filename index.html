@@ -11,16 +11,20 @@
     <header class="top">
       <h1>每日中文閱讀測驗</h1>
 
-      <div class="lang-select">
-        <label for="lang-select">語言</label>
-        <select id="lang-select" aria-label="選擇語言">
-          <option value="traditional" selected>繁體</option>
-          <option value="simplified">简体</option>
-        </select>
+      <div class="user-controls">
+        <span id="user-name" aria-hidden="true"></span>
+        <button id="signout-btn" class="btn ghost" style="display:none">登出</button>
+        <div class="lang-select">
+          <label for="lang-select">語言</label>
+          <select id="lang-select" aria-label="選擇語言">
+            <option value="traditional">繁體</option>
+            <option value="simplified">简体</option>
+          </select>
+        </div>
       </div>
     </header>
 
-    <p class="intro">閱讀下面的短文並回答十個問題。每天只能做一次測驗。完成後會給出得分並保存到本地歷史記錄。</p>
+    <p class="intro">閱讀下面的短文並回答十個問題。每天只能做一次測驗。完成後會給出得分並保存到雲端（Firebase）與瀏覽器本地歷史記錄。</p>
 
     <section id="quiz-area">
       <h2 id="passage-title"></h2>
@@ -47,10 +51,10 @@
     </section>
 
     <footer>
-      <p>這是一個靜態站點，成績保存在瀏覽器本地。如果你需要把成績收集到伺服器或發送給你，請告訴我，我會幫你加上後端介面或匯出功能。</p>
+      <p>你必須使用 Google 帳號登入才能使用此網站。登入後，成績會儲存在 Firebase Firestore。若要使用其他登入方式，請前往 <a href="signin.html">登入頁面</a>。</p>
     </footer>
   </main>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
