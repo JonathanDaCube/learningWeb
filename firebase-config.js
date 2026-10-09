@@ -13,10 +13,7 @@ import {
   getDatabase,
   ref,
   set,
-  get,
-  child,
-  push,
-  update
+  get
 } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js';
 
 const firebaseConfig = {
@@ -26,7 +23,8 @@ const firebaseConfig = {
   storageBucket: "learning-website-b66a9.firebasestorage.app",
   messagingSenderId: "743462650006",
   appId: "1:743462650006:web:74d8a6ba7e4a215a0282b7",
-  measurementId: "G-YMBY0GLM58"
+  measurementId: "G-YMBY0GLM58",
+  databaseURL: "https://learning-website-b66a9-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -51,8 +49,5 @@ export {
   rtdb,
   ref,
   set,
-  get,
-  child,
-  push,
-  update
+  get
 };
