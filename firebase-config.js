@@ -13,7 +13,10 @@ import {
   getDatabase,
   ref,
   set,
-  get
+  get,
+  child,
+  push,
+  update
 } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js';
 
 const firebaseConfig = {
@@ -49,5 +52,8 @@ export {
   rtdb,
   ref,
   set,
-  get
+  get,
+  child,
+  push,
+  update
 };
