@@ -1,1 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>每日中文阅读测验</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>每日中文阅读测验</h1>
+    <p class="intro">阅读下面的短文并回答十个问题。每天只能做一次测验。完成后会给出得分并保存到本地历史记录。</p>
 
+    <section id="quiz-area">
+      <h2 id="passage-title"></h2>
+      <article id="passage" class="passage"></article>
+
+      <form id="questions-form"></form>
+
+      <div class="actions">
+        <button id="submit-btn" class="btn">提交并评分</button>
+        <button id="reset-today-btn" class="btn ghost">重置今日尝试</button>
+      </div>
+
+      <div id="result" class="result" aria-live="polite"></div>
+    </section>
+
+    <section id="history-area">
+      <h3>历史成绩</h3>
+      <table id="history-table">
+        <thead>
+          <tr><th>日期</th><th>得分</th><th>正确/总</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p>这是一个静态站点，成绩保存在浏览器本地。如果你需要把成绩收集到服务器或发送给你，请告诉我，我会帮你加上后端接口或导出功能。</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
