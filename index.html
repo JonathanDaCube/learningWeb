@@ -1,15 +1,25 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>每日中文阅读测验</title>
+  <title>每日中文閱讀測驗</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="container">
-    <h1>每日中文阅读测验</h1>
-    <p class="intro">阅读下面的短文并回答十个问题。每天只能做一次测验。完成后会给出得分并保存到本地历史记录。</p>
+    <header class="top">
+      <h1>每日中文閱讀測驗</h1>
+      <div class="lang-switch" title="切換繁體/简体">
+        <label class="switch">
+          <input type="checkbox" id="lang-toggle" checked>
+          <span class="slider"></span>
+        </label>
+        <div class="labels"><span class="trad">繁體</span><span class="simp">简体</span></div>
+      </div>
+    </header>
+
+    <p class="intro">閱讀下面的短文並回答十個問題。每天只能做一次測驗。完成後會給出得分並保存到本地歷史記錄。</p>
 
     <section id="quiz-area">
       <h2 id="passage-title"></h2>
@@ -18,25 +28,25 @@
       <form id="questions-form"></form>
 
       <div class="actions">
-        <button id="submit-btn" class="btn">提交并评分</button>
-        <button id="reset-today-btn" class="btn ghost">重置今日尝试</button>
+        <button id="submit-btn" class="btn">提交並評分</button>
+        <button id="reset-today-btn" class="btn ghost">重置今日嘗試</button>
       </div>
 
       <div id="result" class="result" aria-live="polite"></div>
     </section>
 
     <section id="history-area">
-      <h3>历史成绩</h3>
+      <h3>歷史成績</h3>
       <table id="history-table">
         <thead>
-          <tr><th>日期</th><th>得分</th><th>正确/总</th></tr>
+          <tr><th>日期</th><th>得分</th><th>正確/總</th></tr>
         </thead>
         <tbody></tbody>
       </table>
     </section>
 
     <footer>
-      <p>这是一个静态站点，成绩保存在浏览器本地。如果你需要把成绩收集到服务器或发送给你，请告诉我，我会帮你加上后端接口或导出功能。</p>
+      <p>這是一個靜態站點，成績保存在瀏覽器本地。如果你需要把成績收集到伺服器或發送給你，請告訴我，我會幫你加上後端介面或匯出功能。</p>
     </footer>
   </main>
 
