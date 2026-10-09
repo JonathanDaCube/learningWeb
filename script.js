@@ -1,7 +1,6 @@
 /* script.js - main page logic (module)
-   - requires user to be signed in with Firebase Google Auth
-   - saves / reads scores to Firestore under users/{uid}/scores/{date}
-   - falls back to localStorage when Firestore ops fail */
+   - updated to redirect to signin/index.html when unauthenticated
+*/
 
 import {
   auth,
@@ -76,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       // not signed in -> force to signin page
-      window.location.href = 'signin.html';
+      window.location.href = 'signin/index.html';
       return;
     }
 
@@ -100,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     signoutBtn.addEventListener('click', async () => {
       try {
         await firebaseSignOut(auth);
-        window.location.href = 'signin.html';
+        window.location.href = 'signin/index.html';
       } catch (err) {
         console.error('Sign out failed', err);
       }
@@ -164,15 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (langSelect) langSelect.value = currentLang;
   }
 
-  function getStoredScoresLocal() {
-    try { const raw = localStorage.getItem(QUIZ_KEY); return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
-  }
-
-  function saveScoreLocal(date, scoreObj) {
-    const all = getStoredScoresLocal();
-    all[date] = scoreObj;
-    localStorage.setItem(QUIZ_KEY, JSON.stringify(all));
-  }
+  function getStoredScoresLocal() { try { const raw = localStorage.getItem(QUIZ_KEY); return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; } }
+  function saveScoreLocal(date, scoreObj) { const all = getStoredScoresLocal(); all[date] = scoreObj; localStorage.setItem(QUIZ_KEY, JSON.stringify(all)); }
 
   async function saveScoreCloud(date, scoreObj) {
     if (!currentUser) return;
@@ -235,8 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const docRef = doc(db, 'users', currentUser.uid, 'scores', date);
         const docSnap = await getDocs(collection(db, 'users', currentUser.uid, 'scores'));
-        // quick check: if doc exists in cloud use it
-        // (we already render history from cloud; here we check local stored)
         const localAll = getStoredScoresLocal();
         if (localAll[date]) {
           const r = localAll[date];
@@ -257,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
   submitBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     if (!currentUser) {
-      window.location.href = 'signin.html';
+      window.location.href = 'signin/index.html';
       return;
     }
 
@@ -265,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const answers = [];
     let unanswered = 0;
     qObj.questions.forEach((qItem, idx)=>{
-      const val = form.querySelector(`input[name="q${idx}"]:checked`);
+      const val = form.querySelector(`input[name=\"q${idx}\"]:checked`);
       if (val) answers.push(Number(val.value)); else { answers.push(null); unanswered++; }
     });
 

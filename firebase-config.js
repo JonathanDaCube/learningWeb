@@ -1,5 +1,5 @@
 // firebase-config.js
-// Updated exports: include getDoc and signInWithPopup helper to be used from signin folder
+// exports auth, db and common helpers
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
 import {
@@ -13,8 +13,8 @@ import {
   getFirestore,
   doc,
   setDoc,
-  getDocs,
   getDoc,
+  getDocs,
   collection,
   query,
   orderBy
@@ -47,14 +47,13 @@ export {
   auth,
   provider,
   signInWithGooglePopup,
-  signInWithPopup,
   signOut,
   onAuthStateChanged,
   db,
   doc,
   setDoc,
-  getDocs,
   getDoc,
+  getDocs,
   collection,
   query,
   orderBy
