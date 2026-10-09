@@ -1,7 +1,5 @@
-/* firebase-config.js
-   - initializes Firebase app
-   - exports auth, provider, db and helper functions
-   Note: using Firebase v9 modular SDK via CDN ES modules */
+// firebase-config.js
+// Updated exports: include getDoc and signInWithPopup helper to be used from signin folder
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
 import {
@@ -16,12 +14,12 @@ import {
   doc,
   setDoc,
   getDocs,
+  getDoc,
   collection,
   query,
   orderBy
 } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
 
-// Firebase config (from user)
 const firebaseConfig = {
   apiKey: "AIzaSyAGyk7X-koKRvLTk6bwPY79MzhUbgOICiA",
   authDomain: "learning-website-b66a9.firebaseapp.com",
@@ -49,12 +47,14 @@ export {
   auth,
   provider,
   signInWithGooglePopup,
+  signInWithPopup,
   signOut,
   onAuthStateChanged,
   db,
   doc,
   setDoc,
   getDocs,
+  getDoc,
   collection,
   query,
   orderBy
