@@ -7,6 +7,19 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <nav class="site-nav" aria-label="網站導覽">
+    <div class="nav-links desktop-nav">
+      <a href="index.html" aria-current="page">每日測驗</a>
+      <a href="leaderboard.html">排行榜</a>
+    </div>
+    <details class="mobile-nav">
+      <summary>選單</summary>
+      <div class="nav-links">
+        <a href="index.html" aria-current="page">每日測驗</a>
+        <a href="leaderboard.html">排行榜</a>
+      </div>
+    </details>
+  </nav>
   <main class="container">
     <header class="top">
       <h1>每日中文閱讀測驗</h1>
@@ -25,6 +38,7 @@
     </header>
 
     <p class="intro">閱讀下面的短文並回答十個問題。每天只能做一次測驗。完成後會給出得分並保存到雲端（Firebase）與瀏覽器本地歷史記錄。</p>
+    <p id="leaderboard-sync-status" role="status"></p>
 
     <section id="quiz-area">
       <h2 id="passage-title"></h2>

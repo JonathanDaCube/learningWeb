@@ -12,6 +12,7 @@ import {
   get,
   child
 } from './firebase-config.js';
+import { syncLeaderboard } from './leaderboard-data.js';
 
 const QUIZ_KEY = 'chinese-daily-quiz-scores';
 const LANG_KEY = 'chinese-quiz-lang';
@@ -81,6 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
     currentUser = user;
     userNameSpan.textContent = user.displayName || user.email || '';
     signoutBtn.style.display = 'inline-block';
+    try {
+      await syncLeaderboard(user);
+    } catch (err) {
+      console.error('Failed to sync leaderboard', err);
+      document.getElementById('leaderboard-sync-status').textContent = '無法更新排行榜，請稍後再試。';
+    }
 
     // render UI after auth
     if (langSelect) {
@@ -273,6 +280,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // save local and cloud
     saveScoreLocal(TODAY, scoreObj);
     const cloudOk = await saveScoreCloud(TODAY, scoreObj);
+    if (cloudOk) {
+      try {
+        await syncLeaderboard(currentUser);
+        document.getElementById('leaderboard-sync-status').textContent = '';
+      } catch (err) {
+        console.error('Failed to sync leaderboard', err);
+        document.getElementById('leaderboard-sync-status').textContent = '成績已儲存，但無法更新排行榜，請稍後再試。';
+      }
+    } else {
+      document.getElementById('leaderboard-sync-status').textContent = '成績只儲存在此瀏覽器，無法更新排行榜。';
+    }
 
     resultEl.innerHTML = (currentLang === 'simplified') ? `<strong>完成！</strong> 你的得分： ${percentage}% （${correct}/${total}）` : `<strong>完成！</strong> 你的得分： ${percentage}% （${correct}/${total}）`;
     disableForm();
