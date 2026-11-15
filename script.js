@@ -13,6 +13,7 @@ import {
   child
 } from './firebase-config.js';
 import { syncLeaderboard } from './leaderboard-data.js';
+import { getDailyQuiz } from './daily-quiz-data.js';
 
 const QUIZ_KEY = 'chinese-daily-quiz-scores';
 const LANG_KEY = 'chinese-quiz-lang';
@@ -21,41 +22,7 @@ const TODAY = new Date().toISOString().slice(0,10); // YYYY-MM-DD
 let currentLang = localStorage.getItem(LANG_KEY) || 'traditional';
 let currentUser = null; // firebase user
 
-// bilingual quiz content (unchanged)
-const quiz = {
-  traditional: {
-    title: '短文：學習中文的好處',
-    passage: `學習中文可以幫助我們更好地理解中華文化、歷史和思想。中文是世界上使用人數最多的語言之一，學習中文不僅能增強跨文化交流能力，還能為工作和學習帶來更多機會。透過閱讀和練習，我們能夠提高詞彙量、理解能力和表達能力。每天堅持一點點，會有很大進步。`,
-    questions: [
-      { q: '短文一開始說學習中文能幫助我們更好地理解什麼？', choices: ['數學和科學', '中華文化、歷史和思想', '音樂與藝術', '世界經濟'], a: 1 },
-      { q: '根據短文，中文是世界上使用人數怎樣的語言？', choices: ['最少的', '較少的', '使用人數很多的', '只有在中國使用的'], a: 2 },
-      { q: '學習中文帶來的好處不包括下面哪一項？', choices: ['增強跨文化交流能力', '為工作和學習帶來機會', '立即精通所有外語', '提高理解能力'], a: 2 },
-      { q: '短文中提到透過什麼方法能提高詞彙量和表達能力？', choices: ['閱讀和練習', '不學習仍然提高', '只看電影', '只聽音樂'], a: 0 },
-      { q: '短文建議學習應該怎樣進行？', choices: ['每天堅持一點點', '一次學完所有內容', '只在週末學習', '每天只學寫字'], a: 0 },
-      { q: '短文強調學習中文能帶來什麼樣的交流能力？', choices: ['跨文化交流能力', '只和朋友交流', '運動能力', '烹飪能力'], a: 0 },
-      { q: '下面哪項是短文沒有直接提到的？', choices: ['提高詞彙量', '提高數學成績', '提高表達能力', '理解中華文化'], a: 1 },
-      { q: '文中說學習中文能為我們帶來更多什麼？', choices: ['機會', '疾病', '時間浪費', '負擔'], a: 0 },
-      { q: '短文的語氣是怎樣的？', choices: ['勸導和積極', '悲傷', '冷漠', '憤怒'], a: 0 },
-      { q: '短文最後一句的意思是？', choices: ['長期堅持會有很大進步', '放棄就更快', '學習很沒用', '只學一次就足夠了'], a: 0 }
-    ]
-  },
-  simplified: {
-    title: '短文：学习中文的好处',
-    passage: `学习中文可以帮助我们更好地理解中华文化、历史和思想。中文是世界上使用人数最多的语言之一，学习中文不仅能增强跨文化交流能力，还能为工作和学习带来更多机会。通过阅读和练习，我们能够提高词汇量、理解能力和表达能力。每天坚持一点点，会有很大进步。`,
-    questions: [
-      { q: '短文一开始说学习中文能帮助我们更好地理解什么？', choices: ['数学和科学', '中华文化、历史和思想', '音乐与艺术', '世界经济'], a: 1 },
-      { q: '根据短文，中文是世界上使用人数怎样的语言？', choices: ['最少的', '较少的', '使用人数很多的', '只有在中国使用的'], a: 2 },
-      { q: '学习中文带来的好处不包括下面哪一项？', choices: ['增强跨文化交流能力', '为工作和学习带来机会', '立即精通所有外语', '提高理解能力'], a: 2 },
-      { q: '短文中提到通过什么方法能提高词汇量和表达能力？', choices: ['阅读和练习', '不学习仍然提高', '只看电影', '只听音乐'], a: 0 },
-      { q: '短文建议学习应该怎样进行？', choices: ['每天坚持一点点', '一次学完所有内容', '只在周末学习', '每天只学写字'], a: 0 },
-      { q: '短文强调学习中文能带来什么样的交流能力？', choices: ['跨文化交流能力', '只和朋友交流', '运动能力', '烹饪能力'], a: 0 },
-      { q: '下面哪项是短文没有直接提到的？', choices: ['提高词汇量', '提高数学成绩', '提高表达能力', '理解中华文化'], a: 1 },
-      { q: '文中说学习中文能为我们带来更多什么？', choices: ['机会', '疾病', '时间浪费', '负担'], a: 0 },
-      { q: '短文的语气是怎样的？', choices: ['劝导和积极', '悲伤', '冷漠', '愤怒'], a: 0 },
-      { q: '短文最后一句的意思是？', choices: ['长期坚持会有很大进步', '放弃就更快', '学习很没用', '只学一次就足够了'], a: 0 }
-    ]
-  }
-};
+let quiz = null;
 
 // DOM elements (queried after DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const langSelect = document.getElementById('lang-select');
   const signoutBtn = document.getElementById('signout-btn');
   const userNameSpan = document.getElementById('user-name');
+  const quizStatus = document.getElementById('quiz-status');
 
   // auth guard: redirect to signin if not signed in
   onAuthStateChanged(auth, async (user) => {
@@ -82,22 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
     currentUser = user;
     userNameSpan.textContent = user.displayName || user.email || '';
     signoutBtn.style.display = 'inline-block';
-    try {
-      await syncLeaderboard(user);
-    } catch (err) {
-      console.error('Failed to sync leaderboard', err);
-      document.getElementById('leaderboard-sync-status').textContent = '無法更新排行榜，請稍後再試。';
-    }
-
     // render UI after auth
     if (langSelect) {
       langSelect.value = currentLang;
       langSelect.addEventListener('change', (e) => {
         currentLang = e.target.value;
         localStorage.setItem(LANG_KEY, currentLang);
-        loadQuiz(currentLang);
+        if (quiz) loadQuiz(currentLang);
         renderHistory();
-        showResultFor(TODAY);
+        if (quiz) showResultFor(TODAY);
       });
     }
 
@@ -110,10 +71,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // initial render
-    loadQuiz(currentLang);
+    try {
+      quiz = (await getDailyQuiz(TODAY)).quiz;
+      if (new Date().toISOString().slice(0, 10) !== TODAY) {
+        quiz = null;
+        throw new Error('UTC date changed while loading the quiz');
+      }
+      loadQuiz(currentLang);
+      quizStatus.textContent = '';
+      resetTodayBtn.disabled = false;
+      await showResultFor(TODAY);
+    } catch (err) {
+      console.error('Failed to load daily quiz', err);
+      quizStatus.textContent = '無法載入今日測驗，請檢查網絡連線或稍後重新載入。';
+    }
     await renderHistory();
-    showResultFor(TODAY);
+    try {
+      await syncLeaderboard(user);
+    } catch (err) {
+      console.error('Failed to sync leaderboard', err);
+      document.getElementById('leaderboard-sync-status').textContent = '無法更新排行榜，請稍後再試。';
+    }
   });
 
   function getQuizForLang(lang) { return quiz[lang] || quiz.traditional; }
@@ -258,6 +236,13 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'signin/index.html';
       return;
     }
+    if (!quiz) return;
+    if (new Date().toISOString().slice(0, 10) !== TODAY) {
+      quizStatus.textContent = '日期已變更，請重新載入頁面以取得今日測驗。';
+      disableForm();
+      resetTodayBtn.disabled = true;
+      return;
+    }
 
     const qObj = getQuizForLang(currentLang);
     const answers = [];
@@ -298,6 +283,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   resetTodayBtn.addEventListener('click', async ()=>{
+    if (!quiz || new Date().toISOString().slice(0, 10) !== TODAY) {
+      quizStatus.textContent = '日期已變更，請重新載入頁面以取得今日測驗。';
+      disableForm();
+      resetTodayBtn.disabled = true;
+      return;
+    }
     if (!confirm((currentLang === 'simplified') ? '确定要清除今日的记录，让今日可以重新答题吗？' : '確定要清除今日的記錄，讓今日可以重新答題嗎？')) return;
     // remove local
     const all = getStoredScoresLocal();
