@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>排行榜 - 每日中文閱讀測驗</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="site-nav" aria-label="網站導覽">
+    <div class="nav-links desktop-nav">
+      <a href="index.html">每日測驗</a>
+      <a href="leaderboard.html" aria-current="page">排行榜</a>
+    </div>
+    <details class="mobile-nav">
+      <summary>選單</summary>
+      <div class="nav-links">
+        <a href="index.html">每日測驗</a>
+        <a href="leaderboard.html" aria-current="page">排行榜</a>
+      </div>
+    </details>
+  </nav>
+  <main class="container">
+    <h1>排行榜</h1>
+    <p>每日與每週排名按答對題數總和排序，平均分數為各次測驗百分比的平均值。日期使用 UTC，每週由星期一開始。</p>
+    <p>連續紀錄計算截至今天或昨天的連續天數，以及截至本週或上週的連續週數。</p>
+    <div class="leaderboard-controls">
+      <label for="leaderboard-period">排名時段</label>
+      <select id="leaderboard-period" disabled>
+        <option value="daily">今日</option>
+        <option value="weekly">本週</option>
+      </select>
+    </div>
+    <p id="leaderboard-status" role="status" aria-live="polite">載入中…</p>
+    <div class="table-scroll">
+      <table id="leaderboard-table" hidden>
+        <thead><tr><th scope="col">排名</th><th scope="col">學習者</th><th scope="col">總分</th><th scope="col">平均分數</th><th scope="col">連續天數</th><th scope="col">連續週數</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+  <script type="module" src="leaderboard.js"></script>
+</body>
+</html>
