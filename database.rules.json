@@ -1,0 +1,53 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "quizzes": {
+      ".read": "auth != null"
+    },
+    "dailyQuizzes": {
+      "$date": {
+        ".read": "auth != null",
+        ".write": "auth != null && !data.exists() && newData.isString() && $date.matches(/^\\d{4}-\\d{2}-\\d{2}$/) && root.child('quizzes').child(newData.val()).exists()"
+      }
+    },
+    "profiles": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "leaderboard": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        "displayName": {
+          ".validate": "newData.isString()"
+        },
+        "scores": {
+          "$date": {
+            ".validate": "$date.matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.hasChildren(['correct', 'total']) && newData.child('correct').isNumber() && newData.child('total').isNumber() && newData.child('correct').val() % 1 === 0 && newData.child('total').val() % 1 === 0 && newData.child('correct').val() >= 0 && newData.child('total').val() > 0 && newData.child('correct').val() <= newData.child('total').val()",
+            "correct": {
+              ".validate": "newData.isNumber()"
+            },
+            "total": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}

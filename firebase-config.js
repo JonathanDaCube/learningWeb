@@ -16,7 +16,8 @@ import {
   get,
   child,
   push,
-  update
+  update,
+  runTransaction
 } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js';
 
 const firebaseConfig = {
@@ -55,5 +56,6 @@ export {
   get,
   child,
   push,
-  update
+  update,
+  runTransaction
 };

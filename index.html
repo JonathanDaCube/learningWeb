@@ -41,14 +41,15 @@
     <p id="leaderboard-sync-status" role="status"></p>
 
     <section id="quiz-area">
+      <p id="quiz-status" role="status" aria-live="polite">載入今日測驗中…</p>
       <h2 id="passage-title"></h2>
       <article id="passage" class="passage"></article>
 
       <form id="questions-form"></form>
 
       <div class="actions">
-        <button id="submit-btn" class="btn">提交並評分</button>
-        <button id="reset-today-btn" class="btn ghost">重置今日嘗試</button>
+        <button id="submit-btn" class="btn" disabled>提交並評分</button>
+        <button id="reset-today-btn" class="btn ghost" disabled>重置今日嘗試</button>
       </div>
 
       <div id="result" class="result" aria-live="polite"></div>
